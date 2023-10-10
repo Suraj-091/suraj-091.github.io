@@ -1,0 +1,49 @@
+params:
+  - name: pi_T # target inflation rate
+    value: 2
+    min: 0
+    max: 20
+    round: 0.1
+    
+  - name: beta # relative weight of loss from inflation
+    value: 1
+    min: 0
+    max: 2
+    round: 0.1
+
+  - name: alpha # slope of Phillips curve
+    value: 1
+    min: 0
+    max: 100
+    round: 0.1
+
+  calcs:
+    
+
+  layout:
+  TwoVerticalGraphsPlusSidebar:
+    topGraph:
+      xAxis:
+          min: -5
+          max: 110
+          title: Employment, N
+          ticks: 5
+      yAxis:
+          intercept: 0
+          max: 10
+          title: Inflation, "\\pi"
+          ticks: 5
+
+      objects:
+        - Curve:
+          parametricFunction:
+            xFunction: cos(t) - params.pi_T
+            yFunction: params.beta*(sin(t) - params.y_e)
+            min: 0
+            max: 3.14
+          color: purple
+    
+    bottomGraph:
+
+    sidebar:
+    
