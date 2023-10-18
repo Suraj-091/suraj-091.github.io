@@ -1,18 +1,181 @@
 <!DOCTYPE html>
-<html class="no-js" lang=""><head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <title>MR Visualisation</title>
-    <link href="https://kineticgraphs.org/css/kg.0.2.6.css" rel="stylesheet">
-    <script src="https://kineticgraphs.org/js/kg.0.2.6.js"></script>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Monetary Policy Visualisation</title>
+    <link href="https://kineticgraphs.org/css/kg.0.2.7.css" rel="stylesheet" type="text/css">
+    <script src="https://kineticgraphs.org/js/kg.0.2.7.js"></script>
 </head>
-<body class="vsc-initialized">
+<body>
 
-<A HREF="../../index.html">Home page</A>
+<A HREF="../index.html">Home page</A>
  
 
- <!--  <h2>Figure 15.15:--> <h2>Test: The MR Curve with parameters representing central bank preferences</h2>  
+ <!--  <h2>Figure 15.15:--> <h2>Test: MR Curve with Central bank preferences</h2>  
 
-<div class="kg-container" src="./MR_WIP.yml" style="width: 100%">
+<div class="kg-container">
+    params:
+    - {name: piT, value: 2, min: 0, max: 10, round: 0.1}
+    - {name: beta, value: 1, min: 0, max: 2, round: 0.1}
+    - {name: ye, value: 5, min: 0, max: 10, round: 0.1}
+    - {name: alpha, value: 1, min: 0, max: 10, round: 0.1}
+    - {name: ADintercept, value: 1, min: 0, max: 7, round: 0.1}
+    - {name: ADslope, value: 0.3, min: 0, max: 1, round: 0.1}
+    - {name: piE, value: 5, min: 0, max: 10, round: 0.1}
+
+    calcs:
+      # xintersect = (-45*(params.alpha)*(params.beta)^2 + (25)*(params.ye) + 9*((params.alpha)^2)*((params.beta)^2)*(params.ye) + 9*(params.alpha)*((params.beta)^2)*params.piT)/(25+9*((params.alpha)^2)*((params.beta)^2))
+      # yintersect = 5 - params.alpha*params.ye + params.alpha*(calcs.xintersect)
+      xintersect = 5
+      yintersect = calcs.xintersect-2
+
+    layout:
+      TwoVerticalGraphsPlusSidebar:
+        topGraph:
+          xAxis:
+            min: -1
+            max: 11
+            title: Employment, N (10,000s)
+            ticks: 5
+            
+          yAxis:
+            intercept: 0
+            max: 10
+            title: Inflation $\pi \; (\%)$ 
+            ticks: 5
+
+          objects:
+          # CB Loss Function
+          - Curve:
+              parametricFunction:
+                xFunction: 0.6*1*(cos(t)) + params.ye
+                yFunction: 1/params.beta*1*(sin(t)) + params.piT
+                min: 0
+                max: 6.29
+              color: purple
+          - Curve:
+              parametricFunction:   
+                xFunction: 0.6*3*(cos(t)) + params.ye
+                yFunction: 1/params.beta*3*(sin(t)) + params.piT
+                min: 0
+                max: 6.29
+              color: purple
+          - Curve:
+              parametricFunction:
+                xFunction: 0.6*5*(cos(t)) + params.ye
+                yFunction: 1/params.beta*5*(sin(t)) + params.piT
+                min: 0
+                max: 6.29
+              color: purple
+          - Point:
+              coordinates: [params.ye, params.piT]
+              droplines:
+                horizontal: "`\\\\pi^T`"
+                vertical: "y_e"
+
+          # CB Loss function endogenous variable circle
+          - Curve:
+              parametricFunction: # (sqrt(10/3)*sqrt(params.beta)*sqrt(-5+params.piT)) ((5-params.piT)/((1/params.beta*sin(t))-(params.alpha*0.6*cos(t)))) ((5-params.piT)*params.beta*sin(t))
+                xFunction: (10*params.beta*(-params.piE+params.piT))/(sqrt(100+36*(params.alpha)^2*(params.beta)^2)) * (0.6*(cos(t))) + params.ye
+                yFunction: ((10*params.beta*(-params.piE+params.piT))/(sqrt(100+36*(params.alpha)^2*(params.beta)^2))) * (1/params.beta*(sin(t))) + params.piT
+                min: 0
+                max: 6.29
+              color: red
+
+          # Phillips Curve
+          - Line:
+              yIntercept: params.alpha*-1*params.ye + params.piE
+              slope: params.alpha 
+              strokeWidth: 0.9
+              color: orange
+          
+          # MR Curve
+          - Line:
+              point: [params.ye, params.piT]
+              point2: [(-9*(params.piE)*(params.alpha)*(params.beta)^2 + (25)*(params.ye) + 9*((params.alpha)^2)*((params.beta)^2)*(params.ye) + 9*(params.alpha)*((params.beta)^2)*params.piT)/(25+9*((params.alpha)^2)*((params.beta)^2)), (params.piE + -1*(params.alpha)*(params.ye)) + params.alpha*((-9*params.piE*(params.alpha)*(params.beta)^2 + (25)*(params.ye) + 9*((params.alpha)^2)*((params.beta)^2)*(params.ye) + 9*(params.alpha)*((params.beta)^2)*params.piT)/(25+9*((params.alpha)^2)*((params.beta)^2)))]
+              strokeWidth: 0.9
+              color: black
+             
+
+          # PC-Loss Intersection Point
+          - Point:
+              coordinates: [(-9*(params.piE)*(params.alpha)*(params.beta)^2 + (25)*(params.ye) + 9*((params.alpha)^2)*((params.beta)^2)*(params.ye) + 9*(params.alpha)*((params.beta)^2)*params.piT)/(25+9*((params.alpha)^2)*((params.beta)^2)), (params.piE + -1*(params.alpha)*(params.ye)) + params.alpha*((-9*params.piE*(params.alpha)*(params.beta)^2 + (25)*(params.ye) + 9*((params.alpha)^2)*((params.beta)^2)*(params.ye) + 9*(params.alpha)*((params.beta)^2)*params.piT)/(25+9*((params.alpha)^2)*((params.beta)^2)))]
+              droplines:
+                vertical: "y_t"
+                horizontal: "\\pi_t"
+              color: black
+              label:
+                text: M
+                position: b
+
+          # Short Run corresponding point
+          - Point:
+              coordinates: [(params.ADintercept)/(1-(params.ADslope)),(params.piE + -1*(params.alpha)*(params.ye)) + params.alpha*((params.ADintercept)/(1-(params.ADslope)))]
+              droplines:
+                vertical:
+              color: black
+              label: 
+                text: S
+                position: b
+
+        bottomGraph:
+          xAxis:
+            min: -1
+            max: 11
+            title: Employment, N (10,000s)
+            ticks: 5
+        
+          yAxis:
+            intercpt: 0
+            max: 10
+            title: Aggregate Demand 
+            ticks: 5
+        
+          objects:
+            - Line:
+                slope: 1
+                color: grey
+                strokeWidth: 0.75
+            - AngleMarker: 
+                measure: 45
+            
+            # AD Curve
+            - Line:
+                slope: params.ADslope
+                yIntercept: params.ADintercept
+                color: black
+                strokeWidth: 1.5
+                label:
+                  text: AD
+                  x: 10
+
+            # Short-run goods market equilibrium
+            - Point: 
+                coordinates: [(params.ADintercept)/(1-(params.ADslope)),(params.ADslope)*(params.ADintercept)/(1-params.ADslope) + params.ADintercept]
+                color: black
+                droplines:
+                  horizontal:
+                  vertical:
+                label:
+                  text: S
+
+        sidebar:
+          controls:
+          - title: Definitions
+            divs:
+              - html: "`$S \\\\rightarrow$ Short-run goods market equilibrium`"  
+              - html: "`$M \\\\rightarrow$ Medium-run labour market equilibrium`"
+
+          - title: Short Run Parameters
+            sliders:
+            - {param: ADintercept, label: "\\text{Short Run AD Shock:}"}
+            - {param: piE, label: "\\text{Inflation Shock:} \\; \\pi^E_t"}
+          
+          - title: Medium Run Parameters
+            sliders:
+            - {param: piT, label: "\\text{Inflation Target:} \\; \\pi^T"}
+            - {param: beta, label: "\\text{Loss Aversion:} \\; \\beta"}
+            - {param: alpha, label: "\\text{Slope of PC:} \\; \\alpha"}
 
 </div>
 
