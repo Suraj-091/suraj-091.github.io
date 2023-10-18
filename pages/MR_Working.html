@@ -70,6 +70,7 @@
               coordinates: [params.ye, params.piT]
               droplines:
                 horizontal: "`\\\\pi^T`"
+                vertical: "y_e"
 
           # CB Loss function endogenous variable circle
           - Curve:
@@ -93,7 +94,7 @@
               coordinates: [(-45*(params.alpha)*(params.beta)^2 + (25)*(params.ye) + 9*((params.alpha)^2)*((params.beta)^2)*(params.ye) + 9*(params.alpha)*((params.beta)^2)*params.piT)/(25+9*((params.alpha)^2)*((params.beta)^2)), (5 + -1*(params.alpha)*(params.ye)) + params.alpha*((-45*(params.alpha)*(params.beta)^2 + (25)*(params.ye) + 9*((params.alpha)^2)*((params.beta)^2)*(params.ye) + 9*(params.alpha)*((params.beta)^2)*params.piT)/(25+9*((params.alpha)^2)*((params.beta)^2)))]
               droplines:
                 vertical: "y_t"
-                horizontal:
+                horizontal: "\\pi_t"
               color: black
               label:
                 text: M
